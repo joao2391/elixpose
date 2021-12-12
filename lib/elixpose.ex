@@ -111,6 +111,28 @@ defmodule Elixpose do
   end
 
   @doc """
+    Count the amount of Forms in the HTML
+
+    ## Examples
+
+        iex> Elixpose.count_forms("https://pt.stackoverflow.com/")
+        1
+  """
+  def count_forms(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("form")
+      |> Enum.count()
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
+  @doc """
     Get the text content from <script> Html Tag
 
     ## Examples
@@ -118,7 +140,7 @@ defmodule Elixpose do
         iex> Elixpose.get_js_content("https://pt.stackoverflow.com/")
         ["\r\n            StackExchange.ready(function() {\r\n                StackExchange.realtime.subscribeToActiveQuestions('526', 'home-active');\r\n            });\r\n        "],
         ["\r\n        StackExchange.ready(function () {\r\n            StackExchange.realtime.init('wss://qa.sockets.stackexchange.com');\r\n                StackExchange.realtime.subscribeToReputationNotifications('526');\r\n
-        StackExchange.realtime.subscribeToTopBarNotifications('526');\r\n        });\r\n    "]
+        StackExchange.realtime.subscribeToTopBarNotifications('526');\r\n        });\r\n "]
   """
   def get_js_content(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -139,7 +161,7 @@ defmodule Elixpose do
 
     ## Examples
 
-        iex> Elixpose.get_csss_content("https://pt.stackoverflow.com/")
+        iex> Elixpose.get_css_content("https://pt.stackoverflow.com/")
         [["body,.top-bar{margin-top:1.9em}"], ["\r\n    "]]
 
   """
