@@ -18,8 +18,16 @@ defmodule ElixposeTest do
     assert Elixpose.count_meta_tags("https://pt.stackoverflow.com/") == 12
   end
 
+  test "returns number 15" do
+    assert Elixpose.count_onclick_events("https://pt.stackoverflow.com/") == 15
+  end
+
   #todo
-  #test "returns string's list" do
+  #test "returns string's list of js content" do
+
+  #end
+
+  #test "returns string's list of css content" do
 
   #end
 

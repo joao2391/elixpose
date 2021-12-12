@@ -4,19 +4,6 @@ defmodule Elixpose do
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Elixpose.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
-
-  @doc """
     Count the CSS referenced
 
     ## Examples
@@ -100,6 +87,29 @@ defmodule Elixpose do
     end
   end
 
+   @doc """
+    Count the OnClick events
+
+    ## Examples
+
+        iex> Elixpose.count_onclick_events("https://pt.stackoverflow.com/")
+        15
+  """
+  def count_onclick_events(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("body")
+      |> Floki.find("[onclick]")
+      |> Enum.count()
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
   @doc """
     Get the text content from <script> Html Tag
 
@@ -118,16 +128,31 @@ defmodule Elixpose do
 
       document
       |> Floki.find("script:not([src])")
-      |> Enum.map(fn {chave, valor1, valor2} -> valor2 end)
-        #if String.contains? valor2, "https" do
-         #  valor2
-         # end
-      #end)
-      #|> Enum.each(fn (x) -> x end)
-      #|> elem(2)
-      #|> Enum.at(4)
-      #|> elem(2)
-      #|> Enum.find(fn (x) ->  IO.puts(x) end)
+      |> Enum.map(fn {_chave, _valor1, valor2} -> valor2 end)
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
+  @doc """
+    Get the text content from <style> Html Tag
+
+    ## Examples
+
+        iex> Elixpose.get_csss_content("https://pt.stackoverflow.com/")
+        [["body,.top-bar{margin-top:1.9em}"], ["\r\n    "]]
+
+  """
+  def get_css_content(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("style")
+      |> Enum.map(fn {_chave, _valor1, valor2} -> valor2 end)
+
       {:error, %{reason: reason}} -> {:error, reason}
     end
   end
