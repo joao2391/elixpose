@@ -35,6 +35,10 @@ defmodule ElixposeTest do
 
   #end
 
+  #test "returns string's list of forms info" do
+
+  #end
+
 
   #https://pt.stackoverflow.com/
 end

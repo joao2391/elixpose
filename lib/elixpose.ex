@@ -179,4 +179,56 @@ defmodule Elixpose do
     end
   end
 
+  @doc """
+    Return information about the form tag
+
+    ## Examples
+
+        iex> Elixpose.get_forms_info("https://pt.stackoverflow.com/")
+        [
+          [
+            {"id", "search"},
+            {"role", "search"},
+            {"action", "/search"},
+            {"class", "flex--item fl-grow1 searchbar px12 js-searchbar "},
+            {"autocomplete", "off"}
+          ]
+        ]
+  """
+  def get_forms_info(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("form")
+      |> Enum.map(fn {_key, value1, _value2} -> value1 end)
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
+   @doc """
+    Returns the page size in kb
+
+    ## Examples
+
+        iex> Elixpose.get_page_size("https://pt.stackoverflow.com/")
+        12
+  """
+  def get_page_size(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("form")
+      |> Enum.map(fn {_key, value1, _value2} -> value1 end)
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
 end
