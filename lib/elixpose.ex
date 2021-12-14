@@ -219,13 +219,11 @@ defmodule Elixpose do
   """
   def get_page_size(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
-      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
-      html = raw_body
-      {:ok, document} = Floki.parse_document(html)
+      {:ok, %{body: raw_body, status_code: code, headers: content_header}} -> {code, content_header, raw_body}
+      #html = raw_body
+      page_size = div(String.length(raw_body), 1024)
 
-      document
-      |> Floki.find("form")
-      |> Enum.map(fn {_key, value1, _value2} -> value1 end)
+      page_size
 
       {:error, %{reason: reason}} -> {:error, reason}
     end

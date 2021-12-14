@@ -26,6 +26,10 @@ defmodule ElixposeTest do
     assert Elixpose.count_forms("https://pt.stackoverflow.com/") == 1
   end
 
+  test "returns number 101 from get_page_size" do
+    assert Elixpose.get_page_size("https://pt.stackoverflow.com/") == 101
+  end
+
   #todo
   #test "returns string's list of js content" do
 
