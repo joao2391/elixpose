@@ -229,4 +229,57 @@ defmodule Elixpose do
     end
   end
 
+  @spec get_onclick_values(binary, any) :: list | {:error, any}
+  @doc """
+    Returns the OnClick values
+
+    ## Examples
+
+        iex> Elixpose.get_onclick_values("https://pt.stackoverflow.com/")
+        [ [ {"onclick", "window.location.href='/questions/129519/como-fazer-um-findoneandupdate-em-um-array-dentro-de-outro-array-com-mongoose'"}, {"class", "cp"} ] ]
+  """
+  def get_onclick_values(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      document
+      |> Floki.find("body")
+      |> Floki.find("[onclick]")
+      |> Enum.map(fn {_key, value1, _value2} -> value1 end)
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
+   @doc """
+    Check if some JS file has an Ajax call
+
+    ## Examples
+
+        iex> Elixpose.has_ajax_call?("https://pt.stackoverflow.com/")
+        true
+  """
+  def has_ajax_call?(url, headers \\ []) do
+    case HTTPoison.get(url, headers) do
+      {:ok, %{body: raw_body, status_code: code}} -> {code, raw_body}
+      html = raw_body
+      {:ok, document} = Floki.parse_document(html)
+
+      total= document
+      |> Floki.find("head")
+      |> Floki.find("script[src*='ajax']")
+      |> Enum.count()
+
+      if total > 0 do
+        true
+      else
+        false
+      end
+
+      {:error, %{reason: reason}} -> {:error, reason}
+    end
+  end
+
 end
