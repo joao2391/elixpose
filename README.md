@@ -1,6 +1,6 @@
 # Elixpose
 
-**TODO: Add description**
+It is a package for helping you to scrap web pages. It shows you a lot of information about the page.
 
 ## Installation
 

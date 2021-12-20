@@ -1,6 +1,7 @@
 defmodule Elixpose do
   @moduledoc """
-  Documentation for `Elixpose`.
+  `Elixpose` helps you to scrap web pages.
+    It shows you a lot of information about the page.
   """
 
   @doc """
@@ -30,7 +31,7 @@ defmodule Elixpose do
     ## Examples
 
         iex> Elixpose.count_js("https://pt.stackoverflow.com/")
-        16
+        19
   """
   def count_js(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -134,13 +135,6 @@ defmodule Elixpose do
 
   @doc """
     Get the text content from <script> Html Tag
-
-    ## Examples
-
-        iex> Elixpose.get_js_content("https://pt.stackoverflow.com/")
-        ["\r\n            StackExchange.ready(function() {\r\n                StackExchange.realtime.subscribeToActiveQuestions('526', 'home-active');\r\n            });\r\n        "],
-        ["\r\n        StackExchange.ready(function () {\r\n            StackExchange.realtime.init('wss://qa.sockets.stackexchange.com');\r\n                StackExchange.realtime.subscribeToReputationNotifications('526');\r\n
-        StackExchange.realtime.subscribeToTopBarNotifications('526');\r\n        });\r\n "]
   """
   def get_js_content(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -158,12 +152,6 @@ defmodule Elixpose do
 
   @doc """
     Get the text content from <style> Html Tag
-
-    ## Examples
-
-        iex> Elixpose.get_css_content("https://pt.stackoverflow.com/")
-        [["body,.top-bar{margin-top:1.9em}"], ["\r\n    "]]
-
   """
   def get_css_content(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -181,19 +169,6 @@ defmodule Elixpose do
 
   @doc """
     Return information about the form tag
-
-    ## Examples
-
-        iex> Elixpose.get_forms_info("https://pt.stackoverflow.com/")
-        [
-          [
-            {"id", "search"},
-            {"role", "search"},
-            {"action", "/search"},
-            {"class", "flex--item fl-grow1 searchbar px12 js-searchbar "},
-            {"autocomplete", "off"}
-          ]
-        ]
   """
   def get_forms_info(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -215,7 +190,7 @@ defmodule Elixpose do
     ## Examples
 
         iex> Elixpose.get_page_size("https://pt.stackoverflow.com/")
-        12
+        101
   """
   def get_page_size(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -232,11 +207,6 @@ defmodule Elixpose do
   @spec get_onclick_values(binary, any) :: list | {:error, any}
   @doc """
     Returns the OnClick values
-
-    ## Examples
-
-        iex> Elixpose.get_onclick_values("https://pt.stackoverflow.com/")
-        [ [ {"onclick", "window.location.href='/questions/129519/como-fazer-um-findoneandupdate-em-um-array-dentro-de-outro-array-com-mongoose'"}, {"class", "cp"} ] ]
   """
   def get_onclick_values(url, headers \\ []) do
     case HTTPoison.get(url, headers) do
@@ -280,6 +250,28 @@ defmodule Elixpose do
 
       {:error, %{reason: reason}} -> {:error, reason}
     end
+  end
+
+   @doc """
+    Get the JSON with the amount of elements
+  """
+  def get_json_report(url, headers \\ []) do
+
+    %Report{id: make_ref(),
+              amount_css: count_css(url, headers),
+              amount_js: count_js(url, headers),
+              amount_html_elements: count_html_elements(url, headers),
+              amount_meta: count_meta_tags(url, headers),
+              amount_js_events: count_onclick_events(url, headers),
+              amount_forms: count_forms(url, headers),
+              amount_forms_info: get_forms_info(url, headers) |> length(),
+              amount_js_content: get_js_content(url, headers) |> length(),
+              amount_onclick_events: get_onclick_values(url, headers) |> length(),
+              form_info: get_forms_info(url, headers),
+              onclick_values: get_onclick_values(url, headers),
+              has_ajax_call: has_ajax_call?(url, headers)}
+    |> JSON.encode()
+
   end
 
 end

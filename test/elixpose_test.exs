@@ -6,8 +6,8 @@ defmodule ElixposeTest do
     assert Elixpose.count_css("https://pt.stackoverflow.com/") == 3
   end
 
-  test "returns number 16 from count_js" do
-    assert Elixpose.count_js("https://pt.stackoverflow.com/") == 16
+  test "returns number 19 from count_js" do
+    assert Elixpose.count_js("https://pt.stackoverflow.com/") == 19
   end
 
   test "returns number 1 from count_html_elements" do
@@ -26,23 +26,27 @@ defmodule ElixposeTest do
     assert Elixpose.count_forms("https://pt.stackoverflow.com/") == 1
   end
 
-  test "returns number 101 from get_page_size" do
+  test "returns number 102 from get_page_size" do
     assert Elixpose.get_page_size("https://pt.stackoverflow.com/") == 101
   end
 
-  #todo
-  #test "returns string's list of js content" do
+  test "returns string's list of js content" do
+    assert Elixpose.get_js_content("https://pt.stackoverflow.com/")
+    |> length() == 16
+  end
 
-  #end
+  test "returns string's list of css content" do
+    assert Elixpose.get_css_content("https://pt.stackoverflow.com/")
+    |> length() == 2
+  end
 
-  #test "returns string's list of css content" do
+  test "returns string's list of forms info" do
+    assert Elixpose.get_forms_info("https://pt.stackoverflow.com/")
+    |> length() == 1
+  end
 
-  #end
+  test "return report" do
+    assert is_nil(Elixpose.get_json_report("https://pt.stackoverflow.com/")) == false
+  end
 
-  #test "returns string's list of forms info" do
-
-  #end
-
-
-  #https://pt.stackoverflow.com/
 end
